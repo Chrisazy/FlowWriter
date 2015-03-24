@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+
+    <parent>
+        <groupId>com.purdue.fw</groupId>
+        <artifactId>fw-root</artifactId>
+        <version>1.0.0-SNAPSHOT</version>
+        <relativePath>../fw-root/pom.xml</relativePath>
+    </parent>
+
+    <modelVersion>4.0.0</modelVersion>
+    <artifactId>fw-app</artifactId>
+    <packaging>pom</packaging>
+
+    <name>fw-app</name>
+    <description>Flow Writer - application packaging module</description>
+
+    <dependencies>
+        <dependency>
+            <groupId>com.purdue.fw</groupId>
+            <artifactId>fw-model</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.purdue.fw</groupId>
+            <artifactId>fw-api</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.purdue.fw</groupId>
+            <artifactId>fw-bl</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <artifactId>maven-antrun-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>package-app</id>
+                        <phase>package</phase>
+                        <configuration>
+                            <tasks>
+                                <mkdir dir="target/bundles" />
+
+                                <copy todir="target/bundles/" flatten="true">
+                                    <fileset dir="/home/sdn/.m2/repository/com/purdue/fw/">
+                                        <include name="fw-model/${project.version}/fw-model-${project.version}.jar"/>
+                                        <include name="fw-api/${project.version}/fw-api-${project.version}.jar"/>
+                                        <include name="fw-dao-api/${project.version}/fw-dao-api-${project.version}.jar"/>
+                                        <include name="fw-bl/${project.version}/fw-bl-${project.version}.jar"/>
+                                        <include name="fw-dao/${project.version}/fw-dao-${project.version}.jar"/>
+                                        <include name="fw-rs/${project.version}/fw-rs-${project.version}.war"/>
+                                        <include name="fw-ui/${project.version}/fw-ui-${project.version}.war"/>
+                                    </fileset>
+                                    <fileset dir="${basedir}" includes="fw.descriptor"/>
+                                </copy>
+
+                                <zip destfile="target/fw-${project.version}.zip" basedir="target/bundles"/>
+                            </tasks>
+                        </configuration>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+    
+</project>

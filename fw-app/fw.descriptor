@@ -1,0 +1,5 @@
+id=com.purdue.fw
+name=Flow Writer
+version=1.0.0.SNAPSHOT
+vendor=purdue
+description=Captures packets between two nodes by setting up flows.
