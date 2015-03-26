@@ -16,6 +16,8 @@
 
     f.trace('including screen.js');
 
+    function load(view) {}
+
     def.addView('screen',
             {
                     load: load

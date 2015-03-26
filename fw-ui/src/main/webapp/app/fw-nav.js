@@ -16,12 +16,13 @@
 
     // Add a new category and new item
     nav.insertCategoryAfter('c-tasks', 'c-fw', [
-        nav.item('n-fw', 'fw', 'square')
-    ]);
-
-    nav.insertCategoryAfter('c-tasks', 'c-screen', [
+        nav.item('n-fw', 'fw', 'square'),
         nav.item('n-screen', 'screen', 'square')
     ]);
+
+    //nav.insertCategoryAfter('c-tasks', 'c-screen', [
+    //    nav.item('n-screen', 'screen', 'square')
+    //]);
 
     // Add a new item to an existing category
     nav.insertItemsBefore('n-exportLogs', [
