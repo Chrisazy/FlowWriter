@@ -19,6 +19,10 @@
         nav.item('n-fw', 'fw', 'square')
     ]);
 
+    nav.insertCategoryAfter('c-tasks', 'c-screen', [
+        nav.item('n-screen', 'screen', 'square')
+    ]);
+
     // Add a new item to an existing category
     nav.insertItemsBefore('n-exportLogs', [
         nav.item('n-fw-task', 'fwTask', 'square')
