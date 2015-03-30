@@ -22,7 +22,18 @@
   
   function create(view) {
     var div = tags_api.div({cls: 'textView'}).append(tags_api.h2('Enter Controller Information')),
-        tf = widget_api.textField({
+
+        text_field1 = widget_api.textField({
+          label: 'Controller IP:',
+          ph: 'Enter IP',
+          on: {
+            keyup: function () {
+              result.html(this.value());
+            }
+          }
+        }),
+
+        text_field2 = widget_api.textField({
           label: 'Login:',
           ph: 'Enter Login',
           on: {
@@ -31,7 +42,8 @@
             }
           }
         }),
-        pf = widget_api.passwordField({
+
+        password_field = widget_api.passwordField({
           label: 'Password:',
           ph: 'Enter Password',
           on: {
@@ -41,7 +53,12 @@
           }
         }),
 
-        row = tags_api.div({css: {margin: 30}}).append(tf, pf);
+        button = widget_api.button({
+          text: 'Save',
+          click: function () { alert('IP: ' + text_field1.value() + '\n' + 'login: ' + text_field2.value() + '\n' + 'password: ' + password_field.value()); }
+        }),
+
+        row = tags_api.div({css: {margin: 45}}).append(text_field1, text_field2, password_field, button);
     
     return div.append(row);
   }
