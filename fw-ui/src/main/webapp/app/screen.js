@@ -18,15 +18,10 @@
   var tags_api = api.lib.htmlTags,
       widget_api = api.lib.widgetFactory;
   
-  // common code
-  var loadApiDoc = api.common.loadApiDoc,
-      enableToggle = api.common.enableToggle,
-      makeCodeBlock = api.common.makeCodeBlock;
-
   fn_api.trace('including screen.js');
   
   function create(view) {
-    var div = tags_api.div({cls: 'textView'}).append(tags_api.h2('TextField')),
+    var div = tags_api.div({cls: 'textView'}).append(tags_api.h2('Enter Controller Information')),
         tf = widget_api.textField({
           label: 'Login:',
           ph: 'Enter Login',
@@ -48,21 +43,12 @@
 
         row = tags_api.div({css: {margin: 30}}).append(tf, pf);
     
-    return div.append(row, makeCodeBlock('screen.js'));
+    return div.append(row);
   }
 
-  def_api.groupViews(
-      def_api.addView('screen', api.common.sampleTab(), {
-        create: create
-      }),
-
-      def_api.addView('screenDoc', api.common.docTab(), {
-        load: loadApiDoc
-      }, {
-        srcPath: '../lib//wgt/textField.js',
-        apiSections: ['main', 'opts', 'method']
-      })
-  );
+  def_api.addView('screen', {
+    create: create
+  });
 }(SKI));
         
   //function dlg(view, titleKey, text) {
