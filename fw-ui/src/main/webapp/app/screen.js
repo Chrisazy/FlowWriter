@@ -56,10 +56,10 @@
         create: create
       }),
 
-      def_api.addView('sampleTextFieldDoc', api.common.docTab(), {
+      def_api.addView('screenDoc', api.common.docTab(), {
         load: loadApiDoc
       }, {
-        srcPath: './wgt/textField.js',
+        srcPath: '../lib//wgt/textField.js',
         apiSections: ['main', 'opts', 'method']
       })
   );
