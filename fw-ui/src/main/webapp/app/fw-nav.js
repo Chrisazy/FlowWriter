@@ -25,8 +25,8 @@
     //]);
 
     // Add a new item to an existing category
-    nav.insertItemsBefore('n-exportLogs', [
-        nav.item('n-fw-task', 'fwTask', 'square')
-    ]);
+    //nav.insertItemsBefore('n-exportLogs'), [
+    //    nav.item('n-fw-task', 'fwTask', 'square')
+    //]);
 
 }(SKI));
