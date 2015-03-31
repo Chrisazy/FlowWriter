@@ -16,7 +16,8 @@
 
     // Add a new category and new item
     nav.insertCategoryAfter('c-tasks', 'c-fw', [
-        nav.item('n-screen', 'screen')
+        nav.item('n-screen', 'screen'),
+        nav.item('n-screen2', 'screen2')
         //nav.item('n-fw', 'fw')
     ]);
 
