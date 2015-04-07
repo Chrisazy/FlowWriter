@@ -47,7 +47,7 @@
                                 <mkdir dir="target/bundles" />
 
                                 <copy todir="target/bundles/" flatten="true">
-                                    <fileset dir="/home/sdn/.m2/repository/com/purdue/fw/">
+                                    <fileset dir="${user.home}/.m2/repository/com/purdue/fw/">
                                         <include name="fw-model/${project.version}/fw-model-${project.version}.jar"/>
                                         <include name="fw-api/${project.version}/fw-api-${project.version}.jar"/>
                                         <include name="fw-dao-api/${project.version}/fw-dao-api-${project.version}.jar"/>
