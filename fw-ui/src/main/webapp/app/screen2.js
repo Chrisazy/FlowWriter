@@ -62,7 +62,7 @@
                         change: function () {
                             table.updateSlice(sliceInfo, {
                                 key: this.value(),
-                                value: ''
+                                value: '',
                             });
                         }
                     });
@@ -92,7 +92,7 @@
         return table;
     }
 
-    // TODO
+
     function createInstTable(view, rd, idx, editMode) {
         var lion = view.lion,
             table,
@@ -217,12 +217,12 @@
             })
             .append(iTimeOutWgt).append(hTimeOutWgt));
 
-        $.getJSON('rs/flowEntry/' + idx, function (data) {
-            mTable.slices(data.matches);
-            iTable.slices(data.instructs);
-            iTimeOutWgt.value(data.iTimeOut);
-            hTimeOutWgt.value(data.hTimeOut);
-        });
+        //$.getJSON('rs/flowEntry/' + idx, function (data) {
+        //    mTable.slices(data.matches);
+        //    iTable.slices(data.instructs);
+        //    iTimeOutWgt.value(data.iTimeOut);
+        //    hTimeOutWgt.value(data.hTimeOut);
+        //});
 
         return div;
     }
@@ -328,9 +328,9 @@
             })
         );
 
-        $.getJSON('rs/flowEntries', function (data) {
-            ft.slices(data.rows);
-        });
+        //$.getJSON('rs/flowEntries', function (data) {
+        //    ft.slices(data.rows);
+        //});
     }
 
     def_api.addView('screen2', {
