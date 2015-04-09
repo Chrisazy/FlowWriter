@@ -105,6 +105,7 @@
                     return lion(value);
                 },
                 editor: function (value, sliceInfo) {
+		    console.log(widget_api)
                     return widget_api.selectBox({
                         id: view.mkId('inst') + wgtId++,
                         values: instTypes,
@@ -184,7 +185,8 @@
             mTable = createMatchTable(view, rd, idx, editMode),
             iTable = createInstTable(view, rd, idx, editMode),
             iTimeOutWgt,
-            hTimeOutWgt;
+            hTimeOutWgt,
+	    testTimeOutWgt;
 
         mTable.domFrag().css({
             width: 300,
@@ -210,12 +212,17 @@
             disable: !editMode
         });
 
+        testTimeOutWgt = widget_api.textField({
+            label: lion('testTimeOut'),
+            disable: !editMode
+        });
+
         div.append(tags_api.div({
                 css: {
                     clear: 'both'
                 }
             })
-            .append(iTimeOutWgt).append(hTimeOutWgt));
+            .append(iTimeOutWgt).append(hTimeOutWgt).append(testTimeOutWgt));
 
         //$.getJSON('rs/flowEntry/' + idx, function (data) {
         //    mTable.slices(data.matches);

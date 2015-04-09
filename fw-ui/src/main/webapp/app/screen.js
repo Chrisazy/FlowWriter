@@ -17,54 +17,85 @@
   // snap-in libs
   var tags_api = api.lib.htmlTags,
       widget_api = api.lib.widgetFactory;
-  
+
   fn_api.trace('including screen.js');
   
   function create(view) {
-    var div = tags_api.div({cls: 'textView'}).append(tags_api.h2('Enter Controller Information')),
+    var div = tags_api.div({cls: 'textView'}).append(tags_api.h2('Enter Required Information')),
 
-        text_field1 = widget_api.textField({
-          label: 'Controller IP:',
-          ph: 'Enter IP',
-          on: {
-            keyup: function () {
-              result.html(this.value());
-            }
-          }
+        IP_field1 = widget_api.textField({
+          label: 'IP 1:',
+          ph: 'Enter IP 1',
+          //on: {
+          //  keyup: function () {
+          //    result.html(this.value());
+          //  }
+          //}
         }),
 
-        text_field2 = widget_api.textField({
-          label: 'Login:',
-          ph: 'Enter Login',
-          on: {
-            keyup: function () {
-              result.html(this.value());
-            }
-          }
+        IP_field2 = widget_api.textField({
+          label: 'IP 2:',
+          ph: 'Enter IP 2',
+          //on: {
+          //  keyup: function () {
+          //    result.html(this.value());
+          //  }
+          //}
         }),
 
-        password_field = widget_api.passwordField({
-          label: 'Password:',
-          ph: 'Enter Password',
-          on: {
-            keyup: function () {
-              result.html(this.value());
-            }
-          }
+        port_field1 = widget_api.textField({
+          label: 'Port 1:',
+          ph: 'Enter Port 1',
+          //on: {
+          //  keyup: function () {
+          //    result.html(this.value());
+          //  }
+          //}
         }),
 
-        button = widget_api.button({
-          text: 'Save',
-          click: function () { alert('IP: ' + text_field1.value() + '\n' + 'login: ' + text_field2.value() + '\n' + 'password: ' + password_field.value()); }
+        port_field2 = widget_api.textField({
+          label: 'Port 2:',
+          ph: 'Enter Port 2'
+          //on: {
+          //  keyup: function () {
+          //    result.html(this.value());
+          //  }
+          //}
         }),
 
-        row = tags_api.div({css: {margin: 45}}).append(text_field1, text_field2, password_field, button);
+        row1 = tags_api.div({css: {margin: 45}}).append(IP_field1, IP_field2),
+        row2 = tags_api.div({css: {margin: 45}}).append(port_field1, port_field2);
     
-    return div.append(row);
+    return div.append(row1).append(row2)
   }
 
+  function load(view) {
+    var lion = view.lion;
+
+    view_api.setToolbar(
+        widget_api.button({
+          icon: 'play',
+          text: lion('tbStart'),
+          click: function () {
+            console.log(view)
+            //alert('IP1: ' + IP_field1.value() + '\n' + 'IP2: ' + IP_field2.value() + '\n'
+              //+ 'Port 1: ' + port_field1.value() + '\n' + 'Port 2:' + port_field2.value());
+          }
+        }),
+
+        widget_api.button({
+          icon: 'stop',
+          text: lion('tbStop'),
+          click: function () {
+          }
+        })
+    );
+  }
+
+
   def_api.addView('screen', {
-    create: create
+    create: create,
+    load: load
   });
 }(SKI));
         
