@@ -80,6 +80,7 @@ public class PacketManager implements SequencedPacketListener, DataPathListener 
 		MutableMatch mm = MatchFactory.createMatch(PV)
 				.addField(createBasicField(PV, ETH_TYPE, EthernetType.IPv4))
 				.addField(createBasicField(PV, IP_PROTO, IpProtocol.TCP))
+				.addField(createBasicField(PV, IP_PROTO, IpProtocol.UDP))
 				.addField(createBasicField(PV, IP_PROTO, IpProtocol.ICMP))
 				.addField(createBasicField(PV, IPV4_SRC, ip_src))
 				.addField(createBasicField(PV, IPV4_DST, ip_dst));
