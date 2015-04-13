@@ -19,9 +19,9 @@
       widget_api = api.lib.widgetFactory;  // Widget Factory API Library
 
   var IP_field1,    // Global declaration of the four fields
-      IP_field2,    // so values can be accesses in the load function
-      port_field1, 
-      port_field2; 
+      IP_field2,    // so values can be accesses in the load function.
+      port_field1,  // These values correspond to the four
+      port_field2;  // text fields in the view.
 
   fn_api.trace('including screen.js');
   
@@ -31,9 +31,9 @@
     // Sample Text Field (Consult SKI Framework Reference for more information)
     //
     // sample_field = widget_api.textField({
-    // label: 'Label Text Here',
-    // ph: 'Text inside of the text box',
-    // icon: 'icon name here'
+    //   label: 'Label Text Here',
+    //   ph: 'Text inside of the text box',
+    //   icon: 'icon name here'
     // });
 
     // First IP Field
@@ -77,26 +77,29 @@
     // Sets the toolbar with two buttons
     // tbStart and tbStop values can be found in screen.properties
     view_api.setToolbar(
+
+        // Start button, used to start the monitoring of conversations
         widget_api.button({
           icon: 'play',
           text: lion('tbStart'),
           click: function () {
-            console.log(view)
             alert('IP1: ' + IP_field1.value() + '\n' + 'IP2: ' + IP_field2.value() + '\n'
               + 'Port 1: ' + port_field1.value() + '\n' + 'Port 2:' + port_field2.value());
           }
         }),
 
+        // Stop button, used to stop the monitoring of conversations
         widget_api.button({
           icon: 'stop',
           text: lion('tbStop'),
           click: function () {
+            console.log('Stop converstaion tracking')
           }
         })
     );
   }
 
-
+  // Adds the create and load functions to the current view, 'screen'
   def_api.addView('screen', {
     create: create,
     load: load
