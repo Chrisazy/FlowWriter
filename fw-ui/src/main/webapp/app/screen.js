@@ -15,71 +15,75 @@
       view_api = api.view;   //view API
 
   // snap-in libs
-  var tags_api = api.lib.htmlTags,
-      widget_api = api.lib.widgetFactory;
+  var tags_api = api.lib.htmlTags,         // HTML Tags API Library
+      widget_api = api.lib.widgetFactory;  // Widget Factory API Library
+
+  var IP_field1,    // Global declaration of the four fields
+      IP_field2,    // so values can be accesses in the load function
+      port_field1, 
+      port_field2; 
 
   fn_api.trace('including screen.js');
   
+
+  // The create functon (Creates the central text, 'Enter Required Information,' and the four text fields)
   function create(view) {
+    // Sample Text Field (Consult SKI Framework Reference for more information)
+    //
+    // sample_field = widget_api.textField({
+    // label: 'Label Text Here',
+    // ph: 'Text inside of the text box',
+    // icon: 'icon name here'
+    // });
+
+    // First IP Field
+    IP_field1 = widget_api.textField({
+      label: 'IP 1:',
+      ph: 'Enter IP 1',
+    });
+
+    // Second IP Field
+    IP_field2 = widget_api.textField({
+      label: 'IP 2:',
+      ph: 'Enter IP 2',
+    });
+
+    // First Port Field
+    port_field1 = widget_api.textField({
+      label: 'Port 1:',
+      ph: 'Enter Port 1',
+    });
+
+    // Second Port Field
+    port_field2 = widget_api.textField({
+      label: 'Port 2:',
+      ph: 'Enter Port 2'
+    });
+
+    // Create a text field, a column of IP_field text fields, and a column of port_field text fields
     var div = tags_api.div({cls: 'textView'}).append(tags_api.h2('Enter Required Information')),
-
-        IP_field1 = widget_api.textField({
-          label: 'IP 1:',
-          ph: 'Enter IP 1',
-          //on: {
-          //  keyup: function () {
-          //    result.html(this.value());
-          //  }
-          //}
-        }),
-
-        IP_field2 = widget_api.textField({
-          label: 'IP 2:',
-          ph: 'Enter IP 2',
-          //on: {
-          //  keyup: function () {
-          //    result.html(this.value());
-          //  }
-          //}
-        }),
-
-        port_field1 = widget_api.textField({
-          label: 'Port 1:',
-          ph: 'Enter Port 1',
-          //on: {
-          //  keyup: function () {
-          //    result.html(this.value());
-          //  }
-          //}
-        }),
-
-        port_field2 = widget_api.textField({
-          label: 'Port 2:',
-          ph: 'Enter Port 2'
-          //on: {
-          //  keyup: function () {
-          //    result.html(this.value());
-          //  }
-          //}
-        }),
-
         row1 = tags_api.div({css: {margin: 45}}).append(IP_field1, IP_field2),
         row2 = tags_api.div({css: {margin: 45}}).append(port_field1, port_field2);
     
+    // Append the two created columns to the text, and return the final object
     return div.append(row1).append(row2)
   }
 
+
+  // The load function (Set the toolbar with the Start and Stop buttons)
   function load(view) {
     var lion = view.lion;
 
+    // Sets the toolbar with two buttons
+    // tbStart and tbStop values can be found in screen.properties
     view_api.setToolbar(
         widget_api.button({
           icon: 'play',
           text: lion('tbStart'),
           click: function () {
             console.log(view)
-            //alert('IP1: ' + IP_field1.value() + '\n' + 'IP2: ' + IP_field2.value() + '\n'
-              //+ 'Port 1: ' + port_field1.value() + '\n' + 'Port 2:' + port_field2.value());
+            alert('IP1: ' + IP_field1.value() + '\n' + 'IP2: ' + IP_field2.value() + '\n'
+              + 'Port 1: ' + port_field1.value() + '\n' + 'Port 2:' + port_field2.value());
           }
         }),
 
@@ -98,44 +102,3 @@
     load: load
   });
 }(SKI));
-        
-  //function dlg(view, titleKey, text) {
-  //  var dlgDiv = tags_api.div( {
-  //    attr: {
-  //      id: view.mkId('dlg'),
-  //      title: view.lion(titleKey)
-  //    }
-  //  }).append(tags_api.p(text)),
-  //      $dlg = dlgDiv.domFrag(),
-  //      actions = {};
-  //
-  //  actions[view.lion('close')] = function () {
-  //    $(this).dialog("close").dialog('destory');
-  //  };
-  //
-  //  $dlg.dialog({
-  //    width: 600,
-  //    buttons: actions
-  //  });
-  //
-  //}
-  //
-  //// Load a view
-  //function load(view) {
-  //  var lion = view.lion;
-  //
-  //
-  //  view_api.setToolbar(
-  //      widget_api.button({
-  //        text: lion('tbDeploy'),
-  //        click: function () {
-  //          dlg(view, 'deployDlg', 'This is where...');
-  //        }
-  //      })
-  //      );
-  //}
-  //
-  //// Add the empty view
-  //def_api.addView('screen', {
-  //  load: load
-  //});
