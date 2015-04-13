@@ -21,7 +21,8 @@
   var IP_field1,    // Global declaration of the four fields
       IP_field2,    // so values can be accesses in the load function.
       port_field1,  // These values correspond to the four
-      port_field2;  // text fields in the view.
+      port_field2,  // text fields in the view.
+      protocol_field;
 
   fn_api.trace('including screen.js');
   
@@ -60,13 +61,20 @@
       ph: 'Enter Port 2'
     });
 
-    // Create a text field, a column of IP_field text fields, and a column of port_field text fields
+    // Second Port Field
+    protocol_field = widget_api.textField({
+      label: 'TCP/UDP/Both',
+      ph: 'Enter Protocol'
+    });
+
+    // Create a text field, a column of IP_field text fields, a column of port_field text fields, and a protocol_field text field
     var div = tags_api.div({cls: 'textView'}).append(tags_api.h2('Enter Required Information')),
         row1 = tags_api.div({css: {margin: 45}}).append(IP_field1, IP_field2),
-        row2 = tags_api.div({css: {margin: 45}}).append(port_field1, port_field2);
+        row2 = tags_api.div({css: {margin: 45}}).append(port_field1, port_field2),
+        row3 = tags_api.div({css: {margin: 45}}).append(protocol_field);
     
-    // Append the two created columns to the text, and return the final object
-    return div.append(row1).append(row2)
+    // Append the three created columns to the text, and return the final object
+    return div.append(row1).append(row2).append(row3);
   }
 
 
@@ -84,7 +92,7 @@
           text: lion('tbStart'),
           click: function () {
             alert('IP1: ' + IP_field1.value() + '\n' + 'IP2: ' + IP_field2.value() + '\n'
-              + 'Port 1: ' + port_field1.value() + '\n' + 'Port 2:' + port_field2.value());
+              + 'Port 1: ' + port_field1.value() + '\n' + 'Port 2: ' + port_field2.value() + '\n' + 'Protocol: ' + protocol_field.value());
           }
         }),
 
