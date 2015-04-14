@@ -121,21 +121,21 @@
                 p_f2 = port_field2.value(),
                 pr_f = protocol_field.value();
 
-            // Check if the protocol is valid
-            if(pr_f != 'UDP' && pr_f != 'TCP' && pr_f != 'Both')
+            // Check if the IP Addresses are valid
+            if(!/^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/.test(IP_f1)
+                || !/^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/.test(IP_f2))
             {
-              dlg(view, 'incorrectProtocol', 'Incorrect protocol value entered. Protocol must be TCP, UDP, or Both');
+              dlg(view, 'incorrectIP', 'Incorrect IP Address entered. IP Addresses must range from 0.0.0.0 to 255.255.255.255');
             }
             // Check if the ports are valid
             else if(p_f1 > 65535 || p_f2 > 65535 || p_f1 < 1 || p_f2 < 1)
             {
               dlg(view, 'incorrectPort', 'Incorrect port value entered. Port values must be between 1 and 65535');
             }
-            // Check if the IP Addresses are valid
-            else if(!/^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/.test(IP_f1)
-                || !/^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/.test(IP_f2))
+            // Check if the protocol is valid
+            else if(pr_f != 'UDP' && pr_f != 'TCP' && pr_f != 'Both')
             {
-              dlg(view, 'incorrectIP', 'Incorrect IP Address entered. IP Addresses must range from 0.0.0.0 to 255.255.255.255');
+              dlg(view, 'incorrectProtocol', 'Incorrect protocol value entered. Protocol must be TCP, UDP, or Both');
             }
             // All the values entered are valid
             else
