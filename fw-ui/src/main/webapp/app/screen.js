@@ -25,6 +25,27 @@
       protocol_field;
 
   fn_api.trace('including screen.js');
+
+  // Creates a dialog box
+  function dlg(view, titleKey, text) {
+      var dlgDiv = tags_api.div({
+              attr: {
+                  id: view.mkId('dlg'),
+                  title: view.lion(titleKey)
+              }
+          }).append(tags_api.p(text)),
+          $dlg = dlgDiv.domFrag(),
+          actions = {};
+ 
+      actions[view.lion('close')] = function () {
+          $(this).dialog("close").dialog('destroy');
+      };
+ 
+      $dlg.dialog({
+          width: 600,
+          buttons: actions
+      });
+  }
   
 
   // The create functon (Creates the central text, 'Enter Required Information,' and the four text fields)
@@ -91,8 +112,30 @@
           icon: 'play',
           text: lion('tbStart'),
           click: function () {
-            alert('IP1: ' + IP_field1.value() + '\n' + 'IP2: ' + IP_field2.value() + '\n'
-              + 'Port 1: ' + port_field1.value() + '\n' + 'Port 2: ' + port_field2.value() + '\n' + 'Protocol: ' + protocol_field.value());
+            //alert('IP1: ' + IP_field1.value() + '\n' + 'IP2: ' + IP_field2.value() + '\n'
+            //  + 'Port 1: ' + port_field1.value() + '\n' + 'Port 2: ' + port_field2.value() + '\n' + 'Protocol: ' + protocol_field.value());
+
+            var IP_f1 = IP_field1.value(),
+                IP_f2 = IP_field2.value(),
+                p_f1 = port_field1.value(),
+                p_f2 = port_field2.value(),
+                pr_f = protocol_field.value();
+
+            if(pr_f != 'UDP' && pr_f != 'TCP' && pr_f != 'Both')
+            {
+              dlg(view, 'incorrectProtocol', 'Incorrect protocol value entered. Protocol must be TCP, UDP, or Both');
+            }
+            
+            if(p_f1 > 65535 || p_f2 > 65535 || p_f1 < 1 || p_f2 < 1)
+            {
+              dlg(view, 'incorrectPort', 'Incorrect port value entered. Port values must be between 1 and 65535');
+            }
+            
+            if(!/^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/.test(IP_f1)
+                || !/^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/.test(IP_f2))
+            {
+              dlg(view, 'incorrectIP', 'Incorrect IP Address entered. IP Addresses must range from 0.0.0.0 to 255.255.255.255');
+            }
           }
         }),
 
