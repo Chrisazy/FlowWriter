@@ -18,10 +18,10 @@
   var tags_api = api.lib.htmlTags,         // HTML Tags API Library
       widget_api = api.lib.widgetFactory;  // Widget Factory API Library
 
-  var IP_field1,    // Global declaration of the four fields
-      IP_field2,    // so values can be accesses in the load function.
-      port_field1,  // These values correspond to the four
-      port_field2,  // text fields in the view.
+  var IP_field1,       // Global declaration of the four fields
+      IP_field2,       // so values can be accesses in the load function.
+      port_field1,     // These values correspond to the four
+      port_field2,     // text fields in the view.
       protocol_field;
 
   fn_api.trace('including screen.js');
@@ -125,21 +125,33 @@
             if(!/^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/.test(IP_f1)
                 || !/^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/.test(IP_f2))
             {
-              dlg(view, 'incorrectIP', 'Incorrect IP Address entered. IP Addresses must range from 0.0.0.0 to 255.255.255.255');
+              dlg(view, 'incorrectIP', 'IP Addresses must range from 0.0.0.0 to 255.255.255.255');
             }
             // Check if the ports are valid
             else if(p_f1 > 65535 || p_f2 > 65535 || p_f1 < 1 || p_f2 < 1)
             {
-              dlg(view, 'incorrectPort', 'Incorrect port value entered. Port values must be between 1 and 65535');
+              dlg(view, 'incorrectPort', 'Port values must be between 1 and 65535');
             }
             // Check if the protocol is valid
             else if(pr_f != 'UDP' && pr_f != 'TCP' && pr_f != 'Both')
             {
-              dlg(view, 'incorrectProtocol', 'Incorrect protocol value entered. Protocol must be TCP, UDP, or Both');
+              dlg(view, 'incorrectProtocol', 'Protocol must be TCP, UDP, or Both');
             }
             // All the values entered are valid
             else
             {
+              var jsonObject = 
+              {
+                ip1: IP_f1,
+                ip2: IP_f2,
+                port1: p_f1,
+                port2: p_f2
+                //protocol: pr_f
+              };
+
+              //$.post('/sdn/fw/v1.0/capture_match', jsonObject, function (data, status) {
+              //});
+
               dlg(view, 'correctValues', 'Conversation monitoring has started.');
               // send values to the application
             }
@@ -159,9 +171,11 @@
     );
   }
 
-  // Adds the create and load functions to the current view, 'screen'
+
+  // Adds the view 'screen' with create and load functions create and load
   def_api.addView('screen', {
     create: create,
     load: load
   });
+  
 }(SKI));
