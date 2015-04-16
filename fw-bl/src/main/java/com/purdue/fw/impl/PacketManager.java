@@ -8,7 +8,11 @@ import static com.hp.of.lib.match.OxmBasicFieldType.ETH_TYPE;
 import static com.hp.of.lib.match.OxmBasicFieldType.IPV4_DST;
 import static com.hp.of.lib.match.OxmBasicFieldType.IPV4_SRC;
 import static com.hp.of.lib.match.OxmBasicFieldType.IP_PROTO;
+import static com.hp.of.lib.match.OxmBasicFieldType.TCP_DST;
+import static com.hp.of.lib.match.OxmBasicFieldType.TCP_SRC;
 
+import java.io.File;
+import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.Set;
 
@@ -42,9 +46,11 @@ import com.hp.of.lib.msg.Port;
 import com.hp.util.ip.EthernetType;
 import com.hp.util.ip.IpAddress;
 import com.hp.util.ip.IpProtocol;
+import com.hp.util.ip.PortNumber;
 import com.hp.util.pkt.Ip;
 import com.hp.util.pkt.Packet;
 import com.hp.util.pkt.ProtocolId;
+import com.purdue.fw.api.InvalidInputException;
 
 /**
  * Sample Packet service implementation.
@@ -57,14 +63,23 @@ public class PacketManager implements SequencedPacketListener, DataPathListener 
 	private static final int FLOW_HARD_TIMEOUT = 600;
 	private static final int FLOW_PRIORITY = 30000;
 
-	private static String src = "10.0.0.1";
-	private static String dst = "10.0.0.2";
+	private String src = null;
+	private String dst = null;
+	private int srcport = -1;
+	private int dstport = -1;
+	private ArrayList<byte[]> capturedPackets;
+	
+	
 
 	private static final ProtocolVersion PV = ProtocolVersion.V_1_0;
 
 	@Reference(name = "ControllerService", cardinality = ReferenceCardinality.OPTIONAL_UNARY, policy = ReferencePolicy.DYNAMIC)
 	private ControllerService cs;
 	final protected static char[] hexArray = "0123456789ABCDEF".toCharArray();
+	private static final String IPADDRESS_PATTERN = "^([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\."
+			+ "([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\."
+			+ "([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\."
+			+ "([01]?\\d\\d?|2[0-4]\\d|25[0-5])$";
 
 	public static String bytesToHex(byte[] bytes) {
 		char[] hexChars = new char[bytes.length * 2];
@@ -76,18 +91,33 @@ public class PacketManager implements SequencedPacketListener, DataPathListener 
 		return new String(hexChars);
 	}
 
-	private Match createMatch(IpAddress ip_src, IpAddress ip_dst) {
+	private Match createMatch(IpAddress ip_src, IpAddress ip_dst,
+			PortNumber src_port, PortNumber dst_port) {
 		MutableMatch mm = MatchFactory.createMatch(PV)
 				.addField(createBasicField(PV, ETH_TYPE, EthernetType.IPv4))
 				.addField(createBasicField(PV, IP_PROTO, IpProtocol.TCP))
 				.addField(createBasicField(PV, IP_PROTO, IpProtocol.UDP))
 				.addField(createBasicField(PV, IP_PROTO, IpProtocol.ICMP))
+				.addField(createBasicField(PV, TCP_SRC, src_port))
+				.addField(createBasicField(PV, TCP_DST, dst_port))
 				.addField(createBasicField(PV, IPV4_SRC, ip_src))
 				.addField(createBasicField(PV, IPV4_DST, ip_dst));
+
 		return (Match) mm.toImmutable();
 	}
 
-	public OfmFlowMod createFlowMod(String ip_src, String ip_dst) {
+	public OfmFlowMod createFlowMod(String ip_src, String ip_dst, int src_port,
+			int dst_port) throws InvalidInputException {
+		// Check the input
+		if (ip_src == null || !ip_src.matches(IPADDRESS_PATTERN))
+			throw new InvalidInputException("IP_SRC", ip_src);
+		else if (ip_dst == null || !ip_dst.matches(IPADDRESS_PATTERN))
+			throw new InvalidInputException("IP_DST", ip_dst);
+		if (src_port < 1 || src_port > 65535)
+			throw new InvalidInputException("SRC_PORT", src_port + "");
+		if (dst_port < 1 || dst_port > 65535)
+			throw new InvalidInputException("DST_PORT", dst_port + "");
+
 		// Create a 1.0 FlowMod ADD message...
 		OfmMutableFlowMod fm = (OfmMutableFlowMod) MessageFactory.create(PV,
 				MessageType.FLOW_MOD, FlowModCommand.ADD);
@@ -96,21 +126,22 @@ public class PacketManager implements SequencedPacketListener, DataPathListener 
 				.idleTimeout(FLOW_IDLE_TIMEOUT)
 				.hardTimeout(FLOW_HARD_TIMEOUT)
 				.match(createMatch(IpAddress.valueOf(ip_src),
-						IpAddress.valueOf(ip_dst)));
+						IpAddress.valueOf(ip_dst),
+						PortNumber.valueOf(src_port),
+						PortNumber.valueOf(dst_port)));
 
-		fm.addAction(ActionFactory.createAction(PV, OUTPUT, Port.CONTROLLER,ActOutput.CONTROLLER_MAX));
-		fm.addAction(ActionFactory.createAction(PV, OUTPUT, Port.NORMAL,ActOutput.CONTROLLER_NO_BUFFER));
+		fm.addAction(ActionFactory.createAction(PV, OUTPUT, Port.CONTROLLER,
+				ActOutput.CONTROLLER_MAX));
+		fm.addAction(ActionFactory.createAction(PV, OUTPUT, Port.NORMAL,
+				ActOutput.CONTROLLER_NO_BUFFER));
 		return (OfmFlowMod) fm.toImmutable();
 	}
 
-	public void sendMod(OfmFlowMod flowMod) {
+	public void sendMod(OfmFlowMod flowMod) throws InvalidInputException,
+			OpenflowException {
 		Set<DataPathInfo> datapathIds = cs.getAllDataPathInfo();
 		for (DataPathInfo dataPathId : datapathIds) {
-			try {
-				cs.sendFlowMod(flowMod, dataPathId.dpid());
-			} catch (OpenflowException e) {
-				e.printStackTrace();
-			}
+			cs.sendFlowMod(flowMod, dataPathId.dpid());
 		}
 	}
 
@@ -118,10 +149,35 @@ public class PacketManager implements SequencedPacketListener, DataPathListener 
 	 * Wrapper for the REST API to consume easily without needing to know or
 	 * care what FlowMods are
 	 */
-	public void createAndSendMod(String ip_src, String ip_dst) {
-		sendMod(createFlowMod(ip_src, ip_dst));
+	public void createAndSendMod(String ip_src, String ip_dst, int src_port,
+			int dst_port) throws InvalidInputException, OpenflowException {
+		this.src = ip_src;
+		this.dst = ip_dst;
+		this.srcport = src_port;
+		this.dstport = dst_port;
+		this.capturedPackets = new ArrayList<byte[]>();
+		sendMod(createFlowMod(ip_src, ip_dst, src_port, dst_port));
+		sendMod(createFlowMod(ip_dst, ip_src, dst_port, src_port));
 	}
 
+	public String stopCapture(String ip_src, String ip_dst, int src_port,
+			int dst_port) throws InvalidInputException, OpenflowException {
+		// Check the input
+		if (ip_src == null || !ip_src.matches(IPADDRESS_PATTERN))
+			throw new InvalidInputException("IP_SRC", ip_src);
+		else if (ip_dst == null || !ip_dst.matches(IPADDRESS_PATTERN))
+			throw new InvalidInputException("IP_DST", ip_dst);
+		if (src_port < 1 || src_port > 65535)
+			throw new InvalidInputException("SRC_PORT", src_port + "");
+		if (dst_port < 1 || dst_port > 65535)
+			throw new InvalidInputException("DST_PORT", dst_port + "");
+		
+		
+		
+		return null;
+	}
+
+	
 	/* Bind the controller service. */
 	protected void bindControllerService(ControllerService cs) {
 		System.out.println("PFW: Binding the cs!");
@@ -133,18 +189,6 @@ public class PacketManager implements SequencedPacketListener, DataPathListener 
 		cs.addPacketListener(this, PacketListenerRole.OBSERVER, 5000,
 				EnumSet.of(ProtocolId.TCP, ProtocolId.UDP));
 		cs.addDataPathListener(this);
-		
-		
-		// TODO: This will NOT be directly called here, it will be called from
-		// elsewhere
-		
-
-		if(cs.isHybridMode()) {
-			System.out.println("PFW: Adding flowmods");
-			sendMod(createFlowMod(src, dst));
-			sendMod(createFlowMod(dst, src));
-		}
-			
 	}
 
 	/* Unbind the controller service. */
@@ -170,45 +214,36 @@ public class PacketManager implements SequencedPacketListener, DataPathListener 
 		Ip ip = p.get(ProtocolId.IP);
 		String src_ip = ip.srcAddr().toString();
 		String dst_ip = ip.dstAddr().toString();
+		if(src == null || dst == null)
+			return;
 		if ((src_ip.equals(src) && dst_ip.equals(dst))
 				|| (src_ip.equals(src) && dst_ip.equals(dst))) {
 
 			System.out.println("PFWMAP4: "
 					+ bytesToHex(msg.getPacketIn().getData()));
-
-			/*
-			 * // It was part of our conversation!
-			 * System.out.println("MAP: Part of our convo");
-			 * if(p.has(ProtocolId.TCP)) { Tcp tcp = p.get(ProtocolId.TCP);
-			 * System.out.println(tcp.); } if(p.has(ProtocolId.ICMP)) {
-			 * System.out.println("MAP Here we go, getting ICMP!"); Icmp icmp =
-			 * p.get(ProtocolId.ICMP); System.out.println("MAP2: START DATA");
-			 * System.out.println("MAP2: "+ bytesToHex(icmp.bytes()));
-			 * System.out.println("MAP2: END DATA"); System.out.flush(); } else
-			 * if(p.has(ProtocolId.UNKNOWN)) { UnknownProtocol data =
-			 * ip.get(ProtocolId.UNKNOWN);
-			 * System.out.println("MAP: Was Unknown");
-			 * System.out.println("MAP: "+bytesToHex(data.bytes())); } else {
-			 * System.out.println("MAP: Had neither:: "+msg.toDebugString()); }
-			 */
+			capturedPackets.add(msg.getPacketIn().getData());
 		}
 	}
 
 	@Override
 	public void event(DataPathEvent e) {
-		if(!cs.isHybridMode())
+		if (!cs.isHybridMode())
 			return;
 		try {
-			cs.sendFlowMod(createFlowMod(src, dst), e.dpid());
+			cs.sendFlowMod(createFlowMod(src, dst, srcport, dstport), e.dpid());
+			cs.sendFlowMod(createFlowMod(dst, src, dstport, srcport), e.dpid());
 		} catch (OpenflowException e1) {
-			// TODO Auto-generated catch block
 			e1.printStackTrace();
+		} catch (InvalidInputException e1) {
+			// Probably just means that there's no input yet, but either way,
+			// nothing to see here..
+			System.err.println("Purdue's Flow Writer: Invalid input");
+			System.err.println("\t" + e1.name + ": " + e1.value);
 		}
 	}
 
 	@Override
 	public void queueEvent(QueueEvent arg0) {
-		// TODO Auto-generated method stub
 
 	}
 }

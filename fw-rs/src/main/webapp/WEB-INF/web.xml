@@ -37,7 +37,6 @@
             <param-name>com.sun.jersey.config.property.classnames</param-name>
             <param-value>
                 com.purdue.fw.rs.PacketResource
-
                 com.hp.sdn.rs.misc.DuplicateIdErrorHandler
                 com.hp.sdn.rs.misc.NotFoundErrorHandler
                 com.hp.sdn.rs.misc.ServiceNotFoundErrorHandler
