@@ -24,6 +24,8 @@
       port_field2,     // text fields in the view.
       protocol_field;
 
+  var monitoringStarted = 0;
+
   fn_api.trace('including screen.js');
 
   // Creates a dialog box
@@ -121,39 +123,48 @@
                 p_f2 = port_field2.value(),
                 pr_f = protocol_field.value();
 
-            // Check if the IP Addresses are valid
-            if(!/^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/.test(IP_f1)
-                || !/^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/.test(IP_f2))
+            if(monitoringStarted == 0)
             {
-              dlg(view, 'incorrectIP', 'IP Addresses must range from 0.0.0.0 to 255.255.255.255');
+              monitoringStarted = 1;
+
+              // Check if the IP Addresses are valid
+              if(!/^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/.test(IP_f1)
+                  || !/^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/.test(IP_f2))
+              {
+                dlg(view, 'incorrectIP', 'IP Addresses must range from 0.0.0.0 to 255.255.255.255');
+              }
+              // Check if the ports are valid
+              else if(p_f1 > 65535 || p_f2 > 65535 || p_f1 < 1 || p_f2 < 1)
+              {
+                dlg(view, 'incorrectPort', 'Port values must be between 1 and 65535');
+              }
+              // Check if the protocol is valid
+              else if(pr_f != 'UDP' && pr_f != 'TCP' && pr_f != 'Both')
+              {
+                dlg(view, 'incorrectProtocol', 'Protocol must be TCP, UDP, or Both');
+              }
+              // All the values entered are valid
+              else
+              {
+                var jsonObject = 
+                {
+                  ip1: IP_f1,
+                  ip2: IP_f2,
+                  port1: p_f1,
+                  port2: p_f2
+                  //protocol: pr_f
+                };
+
+                //$.post('/sdn/fw/v1.0/capture_match', jsonObject, function (data, status) {
+                //});
+
+                dlg(view, 'correctValues', 'Conversation monitoring has started.');
+                // send values to the application
+              }
             }
-            // Check if the ports are valid
-            else if(p_f1 > 65535 || p_f2 > 65535 || p_f1 < 1 || p_f2 < 1)
-            {
-              dlg(view, 'incorrectPort', 'Port values must be between 1 and 65535');
-            }
-            // Check if the protocol is valid
-            else if(pr_f != 'UDP' && pr_f != 'TCP' && pr_f != 'Both')
-            {
-              dlg(view, 'incorrectProtocol', 'Protocol must be TCP, UDP, or Both');
-            }
-            // All the values entered are valid
             else
             {
-              var jsonObject = 
-              {
-                ip1: IP_f1,
-                ip2: IP_f2,
-                port1: p_f1,
-                port2: p_f2
-                //protocol: pr_f
-              };
-
-              //$.post('/sdn/fw/v1.0/capture_match', jsonObject, function (data, status) {
-              //});
-
-              dlg(view, 'correctValues', 'Conversation monitoring has started.');
-              // send values to the application
+              dlg(view, 'errorStarted', 'Conversation monitoring has already started.');
             }
           }
         }),
@@ -163,9 +174,18 @@
           icon: 'stop',
           text: lion('tbStop'),
           click: function () {
-            dlg(view, 'monitoringStopped', 'Conversation monitoring has stopped.');
-            // Tell the application to stop
-            // Save to pcap?
+            if(monitoringStarted == 1)
+            {
+              monitoringStarted = 0;
+
+              dlg(view, 'monitoringStopped', 'Conversation monitoring has stopped.');
+              // Tell the application to stop
+              // Save to pcap?
+            }
+            else
+            {
+              dlg(view, 'errorStopped', 'Conversation monitoring has already stopped.');
+            }
           }
         })
     );
