@@ -164,7 +164,7 @@
             }
             else
             {
-              dlg(view, 'errorStarted', 'Conversation monitoring has already started.');
+              dlg(view, 'errorStarted', 'Conversation monitoring needs to be started.');
             }
           }
         }),
