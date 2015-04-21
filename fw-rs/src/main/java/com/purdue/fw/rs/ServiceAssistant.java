@@ -5,7 +5,9 @@ package com.purdue.fw.rs;
 
 import java.util.Map;
 
+import org.apache.felix.scr.annotations.Activate;
 import org.apache.felix.scr.annotations.Component;
+import org.apache.felix.scr.annotations.Deactivate;
 import org.apache.felix.scr.annotations.Reference;
 import org.apache.felix.scr.annotations.ReferenceCardinality;
 import org.apache.felix.scr.annotations.ReferencePolicy;
@@ -32,6 +34,18 @@ import com.hp.sdn.rs.misc.ServiceLocator;
 public class ServiceAssistant {
     
     private ServiceLocator sl = ServiceLocator.INSTANCE;
+
+    @Activate
+    public void activate() {
+        // activate() is called after all mandatory dependencies
+        // are satisfied
+        System.out.println("Testing start");
+    }
+
+    @Deactivate
+    public void deactivate() {
+
+    }
 
     /**
      * Hook for registering PacketService implementation via declarative services.

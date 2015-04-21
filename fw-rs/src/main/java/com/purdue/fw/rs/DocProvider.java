@@ -13,7 +13,7 @@ import com.hp.sdn.adm.rsdoc.SelfRegisteringRSDocProvider;
 public class DocProvider extends SelfRegisteringRSDocProvider {
     
     public DocProvider() {
-        super("flows", "rsdoc", DocProvider.class.getClassLoader());
+        super("fw", "rsdoc", DocProvider.class.getClassLoader());
     }
 
 }
