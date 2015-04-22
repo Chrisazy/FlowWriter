@@ -1,7 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?><components xmlns:scr="http://www.osgi.org/xmlns/scr/v1.1.0">
-    <scr:component immediate="true" name="com.purdue.fw.rs.ServiceAssistant">
-        <implementation class="com.purdue.fw.rs.ServiceAssistant"/>
-        <property name="service.pid" value="com.purdue.fw.rs.ServiceAssistant"/>
-        <reference name="PacketService" interface="com.purdue.fw.api.PacketService" cardinality="0..n" policy="dynamic" bind="bindPacketService" unbind="unbindPacketService"/>
-    </scr:component>
-</components>

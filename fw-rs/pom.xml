@@ -26,7 +26,7 @@
         <!-- RSdoc properties -->
         <api.name>Flow Writer v1.0</api.name>
         <api.version>1.0</api.version>
-        <api.url>https://localhost:8443/${webapp.context}</api.url>
+        <api.url>https://127.0.0.1:8443/${webapp.context}</api.url>
     </properties>
 
     <dependencies>
@@ -152,7 +152,7 @@
                                     <arg value="-Dapi.version=${api.version}" />
                                     <arg value="-Dapi.url=${api.url}" />
                                     <arg value="-jar" />
-                                    <arg value="/home/sdn/.m2/repository/com/hp/util/hp-util-rsdoc/${hp-util.version}/hp-util-rsdoc-${hp-util.version}.jar" />
+                                    <arg value="${user.home}/.m2/repository/com/hp/util/hp-util-rsdoc/${hp-util.version}/hp-util-rsdoc-${hp-util.version}.jar" />
                                     <arg value="com/purdue/fw/rs" />
                                     <arg value="target/classes/rsdoc" />
                                     <arg value="src/main/java" />

@@ -1,7 +1,0 @@
-{
-    "${restPath}":
-    {
-        "id": {"type": "long"},
-        "name": {"type": "string"}
-    }
-}
