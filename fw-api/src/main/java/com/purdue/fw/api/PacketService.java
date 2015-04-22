@@ -3,9 +3,12 @@
 package com.purdue.fw.api;
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 import com.hp.of.lib.OpenflowException;
 
 
+=======
+>>>>>>> 21b88459bd74932e04a93ea771e39b6032304d45
 =======
 >>>>>>> 21b88459bd74932e04a93ea771e39b6032304d45
 public interface PacketService {

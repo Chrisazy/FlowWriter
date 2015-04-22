@@ -76,6 +76,7 @@ public class PacketResource extends ControllerResource {
         ObjectMapper mapper = new ObjectMapper();
         
         JsonNode root = parse(mapper, request, "Packet data");
+<<<<<<< HEAD
         String ip_src = root.get("ip1").asText();
         String ip_dst = root.get("ip2").asText();
         int src_port = root.get("port1").asInt();
@@ -89,6 +90,20 @@ public class PacketResource extends ControllerResource {
 			return null;
 		}
         return ok(ret).build();
+=======
+        String ip_src =  root.get("ip_src") != null ? root.get("ip_src").asText() : null;
+        String ip_dst = root.get("ip_dst") != null ? root.get("ip_dst").asText() : null;
+        int port_src = root.get("port_src") != null ? root.get("port_src").asInt() : 0;
+        int port_dst = root.get("port_dst") != null ? root.get("port_dst").asInt() : 0;
+        try {
+			svc.createAndSendMod(ip_src, ip_dst, port_src, port_dst);
+		} catch (Exception e) {
+            return Response.status(Response.Status.BAD_REQUEST).
+                    entity(e.getMessage()).type("text/plain").build();
+		}
+
+        return ok().build();
+>>>>>>> 21b88459bd74932e04a93ea771e39b6032304d45
     }
     */
 }
