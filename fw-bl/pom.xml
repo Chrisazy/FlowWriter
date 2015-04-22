@@ -18,6 +18,11 @@
 
     <dependencies>
         <dependency>
+  		<groupId>org.pcap4j</groupId>
+  		<artifactId>pcap4j-core</artifactId>
+  		<version>1.4.0</version>
+	</dependency>
+	<dependency>
             <groupId>com.hp.sdn</groupId>
             <artifactId>sdn-common-misc</artifactId>
             <version>${sdn.version}</version>

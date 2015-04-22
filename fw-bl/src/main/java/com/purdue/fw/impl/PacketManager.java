@@ -12,6 +12,9 @@ import static com.hp.of.lib.match.OxmBasicFieldType.TCP_DST;
 import static com.hp.of.lib.match.OxmBasicFieldType.TCP_SRC;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.Set;
@@ -20,6 +23,11 @@ import org.apache.felix.scr.annotations.Component;
 import org.apache.felix.scr.annotations.Reference;
 import org.apache.felix.scr.annotations.ReferenceCardinality;
 import org.apache.felix.scr.annotations.ReferencePolicy;
+import org.apache.felix.scr.annotations.Service;
+import org.pcap4j.core.NotOpenException;
+import org.pcap4j.core.PcapDumper;
+import org.pcap4j.core.PcapHandle;
+import org.pcap4j.core.PcapNativeException;
 
 import com.hp.of.ctl.ControllerService;
 import com.hp.of.ctl.DataPathEvent;
@@ -51,12 +59,15 @@ import com.hp.util.pkt.Ip;
 import com.hp.util.pkt.Packet;
 import com.hp.util.pkt.ProtocolId;
 import com.purdue.fw.api.InvalidInputException;
+import com.purdue.fw.api.PacketService;
+import com.sun.jersey.core.util.Base64;
 
 /**
  * Sample Packet service implementation.
  */
 @Component(immediate = true)
-public class PacketManager implements SequencedPacketListener, DataPathListener {
+@Service
+public class PacketManager implements PacketService, SequencedPacketListener, DataPathListener {
 
 	private static final long COOKIE = 0x13374468;
 	private static final int FLOW_IDLE_TIMEOUT = 300;
@@ -68,6 +79,7 @@ public class PacketManager implements SequencedPacketListener, DataPathListener 
 	private int srcport = -1;
 	private int dstport = -1;
 	private ArrayList<byte[]> capturedPackets;
+	PcapDumper dumper;
 	
 	
 
@@ -96,8 +108,6 @@ public class PacketManager implements SequencedPacketListener, DataPathListener 
 		MutableMatch mm = MatchFactory.createMatch(PV)
 				.addField(createBasicField(PV, ETH_TYPE, EthernetType.IPv4))
 				.addField(createBasicField(PV, IP_PROTO, IpProtocol.TCP))
-				.addField(createBasicField(PV, IP_PROTO, IpProtocol.UDP))
-				.addField(createBasicField(PV, IP_PROTO, IpProtocol.ICMP))
 				.addField(createBasicField(PV, TCP_SRC, src_port))
 				.addField(createBasicField(PV, TCP_DST, dst_port))
 				.addField(createBasicField(PV, IPV4_SRC, ip_src))
@@ -160,6 +170,24 @@ public class PacketManager implements SequencedPacketListener, DataPathListener 
 		sendMod(createFlowMod(ip_dst, ip_src, dst_port, src_port));
 	}
 
+	private String encodeFileToBase64Binary(File file){
+	    String encodedfile = null;
+	    try {
+	        FileInputStream fileInputStreamReader = new FileInputStream(file);
+	        byte[] bytes = new byte[(int)file.length()];
+	        fileInputStreamReader.read(bytes);
+	        encodedfile = Base64.encode(bytes).toString();
+	        fileInputStreamReader.close();
+	    } catch (FileNotFoundException e) {
+	        // TODO Auto-generated catch block
+	        e.printStackTrace();
+	    } catch (IOException e) {
+	        // TODO Auto-generated catch block
+	        e.printStackTrace();
+	    }
+	    return encodedfile;
+	}
+	
 	public String stopCapture(String ip_src, String ip_dst, int src_port,
 			int dst_port) throws InvalidInputException, OpenflowException {
 		// Check the input
@@ -172,7 +200,29 @@ public class PacketManager implements SequencedPacketListener, DataPathListener 
 		if (dst_port < 1 || dst_port > 65535)
 			throw new InvalidInputException("DST_PORT", dst_port + "");
 		
+		// TODO: Remove listeners and flows
 		
+		try {
+			PcapHandle handle = (new PcapHandle.Builder(null)).build();
+			long time = System.currentTimeMillis();
+			String filename = "fw-"+time+".pcap";
+			PcapDumper dumper = handle.dumpOpen(filename);
+			for(byte[] p : capturedPackets) {
+				dumper.dumpRaw(p);
+			}
+			dumper.close();
+			handle.close();
+			
+			File f = new File(filename);
+			String s = encodeFileToBase64Binary(f);
+			return s;
+			
+			
+		} catch (PcapNativeException e) {
+			e.printStackTrace();
+		} catch (NotOpenException e) {
+			e.printStackTrace();
+		}
 		
 		return null;
 	}

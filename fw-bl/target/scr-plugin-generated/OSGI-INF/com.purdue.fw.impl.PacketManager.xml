@@ -1,6 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?><components xmlns:scr="http://www.osgi.org/xmlns/scr/v1.1.0">
     <scr:component immediate="true" name="com.purdue.fw.impl.PacketManager">
         <implementation class="com.purdue.fw.impl.PacketManager"/>
+        <service servicefactory="false">
+            <provide interface="com.purdue.fw.api.PacketService"/>
+            <provide interface="com.hp.of.ctl.pkt.SequencedPacketListener"/>
+            <provide interface="com.hp.of.ctl.DataPathListener"/>
+            <provide interface="com.hp.of.ctl.OpenflowListener"/>
+        </service>
         <property name="service.pid" value="com.purdue.fw.impl.PacketManager"/>
         <reference name="ControllerService" interface="com.hp.of.ctl.ControllerService" cardinality="0..1" policy="dynamic" bind="bindControllerService" unbind="unbindControllerService"/>
     </scr:component>

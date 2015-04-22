@@ -30,7 +30,12 @@
     </properties>
 
     <dependencies>
-        <dependency>
+       	<dependency>
+		<groupId>org.pcap4j</groupId>
+		<artifactId>pcap4j-core</artifactId>
+		<version>1.4.0</version>
+	</dependency> 
+	<dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
             <version>${slf4j.version}</version>
@@ -105,6 +110,11 @@
                 <configuration>
                     <instructions>
                        <Bundle-SymbolicName>${project.groupId}.${project.artifactId}</Bundle-SymbolicName>
+		<Import-Package>
+			*,
+			org.pcap4j.*
+		</Import-Package>
+		<Embed-Dependency>pcap4j</Embed-Dependency>
                     </instructions>
                 </configuration>
             </plugin>

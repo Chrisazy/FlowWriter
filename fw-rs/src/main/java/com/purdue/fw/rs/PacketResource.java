@@ -42,6 +42,7 @@ public class PacketResource extends ControllerResource {
     public Response start(String request) {
         PacketService svc = get(PacketService.class);
         ObjectMapper mapper = new ObjectMapper();
+        
         JsonNode root = parse(mapper, request, "Packet data");
         String ip_src = root.get("ip1").asText();
         String ip_dst = root.get("ip2").asText();
@@ -56,101 +57,28 @@ public class PacketResource extends ControllerResource {
 		}
         return ok().build();
     }
-
-    /**
-     * Creates a new Packet and registers it.
-     * <p>
-     * Normal Response Code(s): ok (200)
-     * <p>
-     * Error Response Codes: badRequest (400), unauthorized (401), forbidden (403), 
-     * badMethod (405), serviceUnavailable (503)
-     * 
-     * @param request JSON representation of a Packet to be created
-     * @return JSON object
-     
+    /*
     @POST
-    @Produces(MediaType.APPLICATION_JSON)
-    public Response create(String request) {
-        PacketService svc = get(PacketService.class);
-
-        // Decode request
+    @Produces(MediaType.TEXT_PLAIN)
+    @Path("stop")
+    public Response stop(String request) {
+    	PacketService svc = get(PacketService.class);
         ObjectMapper mapper = new ObjectMapper();
-        JsonNode root = parse(mapper, request, "Packet data");
-        JsonNode node = root.path("item");
         
-        String name = exists(node, "name") ? node.path("name").asText() : null;
-
-        // Call the service
-        Packet s = svc.create(name);
-
-        // Encode response
-        return response(s, mapper).build();
+        JsonNode root = parse(mapper, request, "Packet data");
+        String ip_src = root.get("ip1").asText();
+        String ip_dst = root.get("ip2").asText();
+        int src_port = root.get("port1").asInt();
+        int dst_port = root.get("port2").asInt();
+        String ret = null;
+        try {
+			ret = svc.stopCapture(ip_src, ip_dst, src_port, dst_port);
+		} catch (InvalidInputException e) {
+			return null;
+		} catch (OpenflowException e) {
+			return null;
+		}
+        return ok(ret).build();
     }
-
-    /**
-     * Gets the specified Packet by its identifier.
-     * <p>
-     * Normal Response Code(s): ok (200)
-     * <p>
-     * Error Response Codes: badRequest (400), unauthorized (401), forbidden (403), 
-     * badMethod (405), serviceUnavailable (503), itemNotFound (404)
-     * 
-     * @param uid the Packet unique identifier
-     * @return JSON object
-     
-    @GET
-    @Path("{uid}")
-    @Produces(MediaType.APPLICATION_JSON)
-    public Response get(@PathParam("uid") String uid) {
-        PacketService svc = get(PacketService.class);
-        Id<Packet, UUID> id = Id.valueOf(UUID.fromString(uid));
-        Packet s = svc.get(id);
-
-        // Encode response
-        return response(s, new ObjectMapper()).build();
-    }
-
-    /**
-     * Deletes the specified Packet.
-     * <p>
-     * Normal Response Code(s): ok (200)
-     * <p>
-     * Error Response Codes: badRequest (400), unauthorized (401), forbidden (403), 
-     * badMethod (405), serviceUnavailable (503), itemNotFound (404)
-     * 
-     * @param uid the Packet unique identifier
-     * @return no data
-     
-    @DELETE
-    @Path("{uid}")
-    @Produces(MediaType.APPLICATION_JSON)
-    public Response delete(@PathParam("uid") String uid) {
-        PacketService svc = get(PacketService.class);
-        Id<Packet, UUID> id = Id.valueOf(UUID.fromString(uid));
-        svc.delete(id);
-        // Encode response
-        return Response.ok().build();
-    }
-
-    // Encode the response builder for the specified Packet
-    private ResponseBuilder response(Packet s, ObjectMapper mapper) {
-        ObjectNode r = mapper.createObjectNode();
-        r.put("item", json(s, mapper));
-        return ok(r.toString());
-    }
-
-    /**
-     * Returns JSON string describing the given Packet information.
-     * 
-     * @param s the Packet
-     * @param mapper JSON object mapper
-     * @return the JSON node representing the specified Packet information
-     */
-    static JsonNode json(Packet s, ObjectMapper mapper) {
-        ObjectNode node = mapper.createObjectNode();
-        node.put("uid", s.getId().getValue().toString());
-        node.put("name", s.name());
-        return node;
-    }
-
+    */
 }
