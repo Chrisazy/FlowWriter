@@ -17,17 +17,11 @@
     <description>Flow Writer - service implementation module</description>
 
     <dependencies>
-        <dependency>
-  		<groupId>org.pcap4j</groupId>
-  		<artifactId>pcap4j-core</artifactId>
-  		<version>1.4.0</version>
-	</dependency>
-	<dependency>
+	    <dependency>
             <groupId>com.hp.sdn</groupId>
             <artifactId>sdn-common-misc</artifactId>
             <version>${sdn.version}</version>
         </dependency>
-
         <dependency>
             <groupId>com.purdue.fw</groupId>
             <artifactId>fw-model</artifactId>
@@ -38,6 +32,38 @@
             <artifactId>fw-api</artifactId>
             <version>${project.version}</version>
         </dependency>
+        <dependency>
+            <groupId>org.pcap4j</groupId>
+            <artifactId>pcap4j-core</artifactId>
+            <version>1.4.0</version>
+        </dependency>
+        <dependency>
+            <groupId>org.pcap4j</groupId>
+            <artifactId>pcap4j-packetfactory-static</artifactId>
+            <version>1.4.0</version>
+        </dependency>
+        <dependency>
+            <groupId>net.java.dev.jna</groupId>
+            <artifactId>jna</artifactId>
+            <version>3.5.2</version>
+        </dependency>
     </dependencies>
-    
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.felix</groupId>
+                <artifactId>maven-bundle-plugin</artifactId>
+                <version>2.3.6</version>
+                <extensions>true</extensions>
+                <configuration>
+                    <instructions>
+                        <Bundle-SymbolicName>${project.groupId}.${project.artifactId}</Bundle-SymbolicName>
+                        <Embed-Dependency>pcap4j-core, pcap4j-packetfactory-static, jna</Embed-Dependency>
+                    </instructions>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+
 </project>
