@@ -18,17 +18,18 @@
   var tags_api = api.lib.htmlTags,         // HTML Tags API Library
       widget_api = api.lib.widgetFactory;  // Widget Factory API Library
 
-  var IP_field1,       // Global declaration of the four fields
+  var IP_field1,       // Global declaration of the five fields
       IP_field2,       // so values can be accesses in the load function.
       port_field1,     // These values correspond to the four
       port_field2,     // text fields in the view.
-      protocol_field;
+      protocol_field;  // Probably not the best method, but I don't know JavaScript
 
-  var monitoringStarted = 0;
+  var monitoringStarted = 0; // Same as above, needed for accessing in multiple functions
 
   fn_api.trace('including screen.js');
 
-  // Creates a dialog box
+  // Creates a dialog box function (Calling this function with certain parameters displays a dialog box with specific text)
+  // See the load function for sample functionality
   function dlg(view, titleKey, text) {
       var dlgDiv = tags_api.div({
               attr: {
@@ -84,7 +85,7 @@
       ph: 'Enter Port 2'
     });
 
-    // Second Port Field
+    // Protocol Field
     protocol_field = widget_api.textField({
       label: 'TCP/UDP/Both',
       ph: 'Enter Protocol'
@@ -114,9 +115,8 @@
           icon: 'play',
           text: lion('tbStart'),
           click: function () {
-            //alert('IP1: ' + IP_field1.value() + '\n' + 'IP2: ' + IP_field2.value() + '\n'
-            //  + 'Port 1: ' + port_field1.value() + '\n' + 'Port 2: ' + port_field2.value() + '\n' + 'Protocol: ' + protocol_field.value());
 
+            // Grab the values from the fields
             var IP_f1 = IP_field1.value(),
                 IP_f2 = IP_field2.value(),
                 p_f1 = port_field1.value(),
@@ -125,7 +125,7 @@
 
             if(monitoringStarted == 0)
             {
-              // Check if the IP Addresses are valid
+              // Check if the IP Addresses are valid (Regex from online)
               if(!/^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/.test(IP_f1)
                   || !/^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/.test(IP_f2))
               {
@@ -164,7 +164,7 @@
             }
             else
             {
-              dlg(view, 'errorStarted', 'Conversation monitoring needs to be started.');
+              dlg(view, 'errorStarted', 'Conversation monitoring in progress.');
             }
           }
         }),
@@ -184,7 +184,7 @@
             }
             else
             {
-              dlg(view, 'errorStopped', 'Conversation monitoring has already stopped.');
+              dlg(view, 'errorStopped', 'Conversation monitoring needs to be started.');
             }
           }
         })

@@ -1,5 +1,5 @@
 Manifest-Version: 1.0
-Bnd-LastModified: 1429632106515
+Bnd-LastModified: 1429713300176
 Build-Jdk: 1.7.0_65
 Built-By: sdn
 Bundle-Description: Flow Writer - service implementation module
