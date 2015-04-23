@@ -166,7 +166,7 @@
 
                 // send values to the application
                 $.post('/sdn/fw/v1.0/capture', JSON.stringify(jsonObject), function (data, status) {
-                  console.log(data + status);
+                  console.log(data + " " + status);
                 });
               }
             }
@@ -190,7 +190,7 @@
 
               // Tell the application to stop
               $.post('/sdn/fw/v1.0/capture/stop', JSON.stringify(jsonObject), function(data, status) {
-                console.log(data + status);
+                console.log(data + " " + status);
               });
             }
             else
