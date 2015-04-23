@@ -21,10 +21,13 @@ import com.purdue.fw.api.PacketService;
 @Path("capture")
 public class PacketResource extends ControllerResource {
 
+	PacketService svc = null;
+	
+	
     @POST
     @Produces(MediaType.APPLICATION_JSON)
     public Response start(String request) {
-        PacketService svc = get(PacketService.class);
+        svc = get(PacketService.class);
         ObjectMapper mapper = new ObjectMapper();
         
         JsonNode root = parse(mapper, request, "Packet data");
@@ -43,10 +46,11 @@ public class PacketResource extends ControllerResource {
     }
     
     @POST
-    @Produces(MediaType.TEXT_PLAIN)
+    @Produces(MediaType.APPLICATION_JSON)
     @Path("stop")
     public Response stop(String request) {
-    	PacketService svc = get(PacketService.class);
+    	if(svc == null)
+    		return deleted().build();
         ObjectMapper mapper = new ObjectMapper();
         
         JsonNode root = parse(mapper, request, "Packet data");
@@ -58,11 +62,11 @@ public class PacketResource extends ControllerResource {
         try {
 			ret = svc.stopCapture(ip_src, ip_dst, src_port, dst_port);
 		} catch (InvalidInputException e) {
-			return null;
+			return ok("Failed").build();
 		} catch (OpenflowException e) {
-			return null;
+			return ok("Failed2").build();
 		}
-        return ok(ret).build();
+        return ok("{\"file\":\""+ret+"\"}").build();
     }
     
 }
