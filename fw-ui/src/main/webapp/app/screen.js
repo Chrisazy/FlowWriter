@@ -10,9 +10,9 @@
   'use strict';
 
   //framework APIs
-  var fn_api = api.fn,       //general API
-      def_api = api.def,     //application definition API
-      view_api = api.view;   //view API
+  var fn_api = api.fn,       // general API
+      def_api = api.def,     // application definition API
+      view_api = api.view;   // view API
 
   // snap-in libs
   var tags_api = api.lib.htmlTags,         // HTML Tags API Library
@@ -25,6 +25,8 @@
       protocol_field;  // Probably not the best method, but I don't know JavaScript
 
   var monitoringStarted = 0; // Same as above, needed for accessing in multiple functions
+
+  var jsonObject;
 
   fn_api.trace('including screen.js');
 
@@ -132,6 +134,10 @@
                 dlg(view, 'incorrectIP', 'IP Addresses must range from 0.0.0.0 to 255.255.255.255');
               }
               // Check if the ports are valid
+              else if(isNaN(p_f1) || isNaN(p_f2))
+              {
+                dlg(view, 'incorrectPort', 'Port values must be numbers');
+              }
               else if(p_f1 > 65535 || p_f2 > 65535 || p_f1 < 1 || p_f2 < 1)
               {
                 dlg(view, 'incorrectPort', 'Port values must be between 1 and 65535');
@@ -146,7 +152,7 @@
               {
                 monitoringStarted = 1;
 
-                var jsonObject = 
+                jsonObject = 
                 {
                   ip1: IP_f1,
                   ip2: IP_f2,
@@ -155,11 +161,11 @@
                   //protocol: pr_f
                 };
 
-                //$.post('/sdn/fw/v1.0/capture_match', jsonObject, function (data, status) {
-                //});
-
                 dlg(view, 'correctValues', 'Conversation monitoring has started.');
+
                 // send values to the application
+                $.post('/sdn/fw/v1.0/capture', jsonObject, function (data, status) {
+                });
               }
             }
             else
@@ -179,8 +185,11 @@
               monitoringStarted = 0;
 
               dlg(view, 'monitoringStopped', 'Conversation monitoring has stopped.');
+
               // Tell the application to stop
               // Save to pcap?
+              $.post('/sdn/fw/v1.0/capture/stop', jsonObject, function(data, status) {
+              });
             }
             else
             {
