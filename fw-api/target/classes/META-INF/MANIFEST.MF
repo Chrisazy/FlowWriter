@@ -1,5 +1,9 @@
 Manifest-Version: 1.0
+<<<<<<< HEAD
 Bnd-LastModified: 1429808747244
+=======
+Bnd-LastModified: 1427824580750
+>>>>>>> origin
 Build-Jdk: 1.7.0_65
 Built-By: sdn
 Bundle-Description: Flow Writer - interface definitions module
