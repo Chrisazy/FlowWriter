@@ -16,12 +16,11 @@
 
     // Add a new category and new item
     nav.insertCategoryAfter('c-tasks', 'c-fw', [
-        nav.item('n-fw', 'fw', 'square')
-    ]);
+        nav.item('n-screen', 'screen')
 
-    // Add a new item to an existing category
-    nav.insertItemsBefore('n-exportLogs', [
-        nav.item('n-fw-task', 'fwTask', 'square')
+        // Another tab can be added by doing:
+        // nav.item('name1', 'name2')
+        //
+        // Where name1 and name2 are variables in fw-nav.properties
     ]);
-
 }(SKI));

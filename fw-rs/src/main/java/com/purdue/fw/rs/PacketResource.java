@@ -36,21 +36,20 @@ public class PacketResource extends ControllerResource {
         int src_port = root.get("port1").asInt();
         int dst_port = root.get("port2").asInt();
         try {
-			svc.createAndSendMod(ip_src, ip_dst, src_port, dst_port);
+			return ok(svc.createAndSendMod(ip_src, ip_dst, src_port, dst_port)).build();
 		} catch (InvalidInputException e) {
-			return null;
+			return deleted().build();
 		} catch (OpenflowException e) {
-			return null;
+			return deleted().build();
 		}
-        return ok().build();
     }
     
     @POST
-    @Produces(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.TEXT_PLAIN)
     @Path("stop")
     public Response stop(String request) {
     	if(svc == null)
-    		return deleted().build();
+    		return ok("ERROR").build();
         ObjectMapper mapper = new ObjectMapper();
         
         JsonNode root = parse(mapper, request, "Packet data");
