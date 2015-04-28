@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
-  <classpathentry kind="src" path="src/test/java" output="target/test-classes" including="**/*.java"/>
   <classpathentry kind="src" path="src/main/java" including="**/*.java"/>
   <classpathentry kind="src" path="src/main/resources" excluding="**/*.java"/>
   <classpathentry kind="output" path="target/classes"/>
@@ -79,6 +78,8 @@
   <classpathentry kind="var" path="M2_REPO/com/hp/sdn/sdn-adm-ext-api/2.4.5/sdn-adm-ext-api-2.4.5.jar"/>
   <classpathentry kind="var" path="M2_REPO/com/hp/sdn/sdn-adm-rs-misc/2.4.5/sdn-adm-rs-misc-2.4.5-tests.jar"/>
   <classpathentry kind="src" path="/fw-model"/>
+  <classpathentry kind="var" path="M2_REPO/org/pcap4j/pcap4j-core/1.4.0/pcap4j-core-1.4.0.jar"/>
+  <classpathentry kind="var" path="M2_REPO/net/java/dev/jna/jna/4.1.0/jna-4.1.0.jar"/>
   <classpathentry kind="src" path="/fw-api"/>
   <classpathentry kind="var" path="M2_REPO/com/sun/jersey/jersey-test-framework/jersey-test-framework-grizzly/1.17/jersey-test-framework-grizzly-1.17.jar"/>
   <classpathentry kind="var" path="M2_REPO/com/sun/grizzly/grizzly-servlet-webserver/1.9.45/grizzly-servlet-webserver-1.9.45.jar"/>
