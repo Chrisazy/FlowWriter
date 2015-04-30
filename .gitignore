@@ -12,5 +12,5 @@
 hs_err_pid*
 *.iml
 *.swp
-*.zip
-**/target/
+#*.zip
+#**/target/

@@ -33,8 +33,12 @@ public class PacketResource extends ControllerResource {
         JsonNode root = parse(mapper, request, "Packet data");
         String ip_src = root.get("ip1").asText();
         String ip_dst = root.get("ip2").asText();
-        int src_port = root.get("port1").asInt();
-        int dst_port = root.get("port2").asInt();
+       // int src_port = root.get("port1").asInt();
+       // int dst_port = root.get("port2").asInt();
+        
+        // These ports are arbitrary currently, as we're not matching on ports.
+        int src_port = 1;
+        int dst_port = 1;
         try {
 			return ok(svc.createAndSendMod(ip_src, ip_dst, src_port, dst_port)).build();
 		} catch (InvalidInputException e) {

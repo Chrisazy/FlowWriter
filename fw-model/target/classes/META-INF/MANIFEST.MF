@@ -1,0 +1,16 @@
+Manifest-Version: 1.0
+Bnd-LastModified: 1430422900158
+Build-Jdk: 1.7.0_65
+Built-By: sdn
+Bundle-Description: Flow Writer - domain model module
+Bundle-ManifestVersion: 2
+Bundle-Name: fw-model
+Bundle-SymbolicName: com.purdue.fw.fw-model
+Bundle-Version: 1.0.0.SNAPSHOT
+Created-By: Apache Maven Bundle Plugin
+Embed-Dependency: pcap4j
+Export-Package: com.purdue.fw.model;uses:="com.hp.api,com.hp.sdn,com.hp.
+ util.filter";version="1.0.0.SNAPSHOT"
+Import-Package: com.hp.api,com.hp.sdn;version="[2.4,3)",com.hp.util.filt
+ er
+Tool: Bnd-1.50.0

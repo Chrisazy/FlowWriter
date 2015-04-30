@@ -158,7 +158,7 @@ public class PacketManager implements PacketService, SequencedPacketListener,
 			+ "([01]?\\d\\d?|2[0-4]\\d|25[0-5])$";
 
 	private Match createMatch(IpAddress ip_src, IpAddress ip_dst,
-			PortNumber src_port, PortNumber dst_port) {
+			PortNumber src_port, PortNumber dst_port, IpProtocol prot) {
 		MutableMatch mm = MatchFactory
 				.createMatch(PV)
 				.addField(createBasicField(PV, ETH_TYPE, EthernetType.IPv4))
@@ -178,11 +178,12 @@ public class PacketManager implements PacketService, SequencedPacketListener,
 			throw new InvalidInputException("IP_SRC", ip_src);
 		else if (ip_dst == null || !ip_dst.matches(IPADDRESS_PATTERN))
 			throw new InvalidInputException("IP_DST", ip_dst);
-		if (src_port < 1 || src_port > 65535)
-			throw new InvalidInputException("SRC_PORT", src_port + "");
-		if (dst_port < 1 || dst_port > 65535)
-			throw new InvalidInputException("DST_PORT", dst_port + "");
-
+		/*
+		 * if (src_port < 1 || src_port > 65535) throw new
+		 * InvalidInputException("SRC_PORT", src_port + ""); if (dst_port < 1 ||
+		 * dst_port > 65535) throw new InvalidInputException("DST_PORT",
+		 * dst_port + "");
+		 */
 		// Create a 1.0 FlowMod ADD message...
 		OfmMutableFlowMod fm = (OfmMutableFlowMod) MessageFactory.create(PV,
 				MessageType.FLOW_MOD, FlowModCommand.ADD);
@@ -258,7 +259,7 @@ public class PacketManager implements PacketService, SequencedPacketListener,
 					return "{\"error\":\"IOException\"}";
 				}
 		}
-		return "{\"filename\":\""+filename+"\"";
+		return "{\"filename\":\"" + filename + "\"";
 	}
 
 	public String stopCapture(String ip_src, String ip_dst, int src_port,
@@ -275,7 +276,7 @@ public class PacketManager implements PacketService, SequencedPacketListener,
 
 		cs.removeDataPathListener(this);
 		cs.removePacketListener(this);
-		return "{\"numPackets\":"+numPackets+"}";
+		return "{\"numPackets\":" + numPackets + "}";
 	}
 
 	/* Bind the controller service. */
