@@ -1,5 +1,5 @@
 Manifest-Version: 1.0
-Bnd-LastModified: 1430496536553
+Bnd-LastModified: 1430500546705
 Build-Jdk: 1.7.0_65
 Built-By: sdn
 Bundle-Description: Flow Writer - REST API module

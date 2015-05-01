@@ -17,59 +17,73 @@ import com.purdue.fw.api.PacketService;
 
 /**
  * Sample Packet REST API resource.
+ * 
+ * Careful, this file is VOLITILE. Comments and things MIGHT MATTER
+ * 
+ * @Path specifies the relative path to this class's rest API
+ * 
+ *       an @Path above a method specifies that method's API's relative path to
+ *       THIS path
+ * 
+ * @POST specifies the type of method used is POST
+ * @Produces specifies the content-type we return
  */
 @Path("capture")
 public class PacketResource extends ControllerResource {
 
 	PacketService svc = null;
-	
-	
-    @POST
-    @Produces(MediaType.APPLICATION_JSON)
-    public Response start(String request) {
-        svc = get(PacketService.class);
-        ObjectMapper mapper = new ObjectMapper();
-        
-        JsonNode root = parse(mapper, request, "Packet data");
-        String ip_src = root.get("ip1").asText();
-        String ip_dst = root.get("ip2").asText();
-       // int src_port = root.get("port1").asInt();
-       // int dst_port = root.get("port2").asInt();
-        
-        // These ports are arbitrary currently, as we're not matching on ports.
-        int src_port = 1;
-        int dst_port = 1;
-        try {
-			return ok(svc.createAndSendMod(ip_src, ip_dst, src_port, dst_port)).build();
+
+	@POST
+	@Produces(MediaType.APPLICATION_JSON)
+	public Response start(String request) {
+		// Use our Virgo stuff to get an instance of a PacketService, which is
+		// going to be our PacketManager Service/Component.
+		svc = get(PacketService.class);
+		ObjectMapper mapper = new ObjectMapper();
+		// Grab the JsonNode from the request string. Packet Data appears arbitrary.
+		JsonNode root = parse(mapper, request, "Packet data");
+		
+		// Grab the values from the json object
+		String ip_src = root.get("ip1").asText();
+		String ip_dst = root.get("ip2").asText();
+		// int src_port = root.get("port1").asInt();
+		// int dst_port = root.get("port2").asInt();
+
+		// These ports are arbitrary currently, as we're not matching on ports.
+		int src_port = 1;
+		int dst_port = 1;
+		try {
+			return ok(svc.createAndSendMod(ip_src, ip_dst, src_port, dst_port))
+					.build();
 		} catch (InvalidInputException e) {
 			return deleted().build();
 		} catch (OpenflowException e) {
 			return deleted().build();
 		}
-    }
-    
-    @POST
-    @Produces(MediaType.TEXT_PLAIN)
-    @Path("stop")
-    public Response stop(String request) {
-    	if(svc == null)
-    		return ok("ERROR").build();
-        ObjectMapper mapper = new ObjectMapper();
-        
-        JsonNode root = parse(mapper, request, "Packet data");
-        String ip_src = root.get("ip1").asText();
-        String ip_dst = root.get("ip2").asText();
-        int src_port = root.get("port1").asInt();
-        int dst_port = root.get("port2").asInt();
-        String ret = null;
-        try {
+	}
+
+	@POST
+	@Produces(MediaType.TEXT_PLAIN)
+	@Path("stop")
+	public Response stop(String request) {
+		if (svc == null)
+			return ok("PFWERROR").build();
+		ObjectMapper mapper = new ObjectMapper();
+
+		JsonNode root = parse(mapper, request, "Packet data");
+		String ip_src = root.get("ip1").asText();
+		String ip_dst = root.get("ip2").asText();
+		int src_port = root.get("port1").asInt();
+		int dst_port = root.get("port2").asInt();
+		String ret = null;
+		try {
 			ret = svc.stopCapture(ip_src, ip_dst, src_port, dst_port);
 		} catch (InvalidInputException e) {
 			return ok("Failed").build();
 		} catch (OpenflowException e) {
 			return ok("Failed2").build();
 		}
-        return ok("{\"file\":\""+ret+"\"}").build();
-    }
-    
+		return ok(ret).build();
+	}
+
 }

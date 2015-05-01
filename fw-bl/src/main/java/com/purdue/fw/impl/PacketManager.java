@@ -345,7 +345,7 @@ public class PacketManager implements PacketService, SequencedPacketListener,
 		filename = "/opt/sdn/PFW" + System.currentTimeMillis() + ".pcap";
 		final File tmpPcap = new File(filename);
 		FileOutputStream tmpOutputStream = null;
-		
+
 		// Basic fileIO
 		try {
 			tmpOutputStream = new FileOutputStream(tmpPcap, false);
@@ -382,12 +382,19 @@ public class PacketManager implements PacketService, SequencedPacketListener,
 		if (dst_port < 1 || dst_port > 65535)
 			throw new InvalidInputException("DST_PORT", dst_port + "");
 
+		// TODO: REMOVE THE FLOWS. Probably with the cookie, not sure. Right now
+		// relying on the timeout.
+
+		// Remove us as listener
 		cs.removeDataPathListener(this);
 		cs.removePacketListener(this);
 		return "{\"numPackets\":" + numPackets + "}";
 	}
 
-	/* Bind the controller service. */
+	/*
+	 * Bind the controller service. This is called when the @Reference
+	 * ControllerService magic gives us a ControllerService to play with
+	 */
 	protected void bindControllerService(ControllerService cs) {
 		System.out.println("PFW: Binding the cs!");
 		if (this.cs != null) {
@@ -397,7 +404,10 @@ public class PacketManager implements PacketService, SequencedPacketListener,
 		this.cs = cs;
 	}
 
-	/* Unbind the controller service. */
+	/*
+	 * Unbind the controller service. Called either at the end of life of the
+	 * controller, application or ControllerService
+	 */
 	protected void unbindControllerService(ControllerService cs) {
 		if (this.cs == cs) {
 			this.cs.removePacketListener(this);
@@ -405,18 +415,29 @@ public class PacketManager implements PacketService, SequencedPacketListener,
 		}
 	}
 
+	// Called on DataPathEvent error of some sort..
 	@Override
 	public void errorEvent(ErrorEvent e) {
 		System.err.println("PFW: ERROR - " + e.text());
 	}
 
+	// This is the heart of the application, and unfortunately I'm running out
+	// of time for documentation..
+	/*
+	 * Part of the PacketListener that we registered as, called when a PACKET_IN
+	 * message is given to the controller for all registered PacketListener
+	 */
 	@Override
 	public void event(MessageContext msg) {
 		System.out.println("PFW: Received msg");
+		// Get the Packet object from the message
 		Packet p = msg.decodedPacket();
+		// At this point, we have no idea if it's a packet we want or not yet,
+		// so we first ensure it even uses the IP protocol
 		if (!p.has(ProtocolId.IP)) {
 			return;
 		}
+		// Get the IP and check that it is one of the ones we want.
 		Ip ip = p.get(ProtocolId.IP);
 		String src_ip = ip.srcAddr().toString();
 		String dst_ip = ip.dstAddr().toString();
@@ -424,7 +445,7 @@ public class PacketManager implements PacketService, SequencedPacketListener,
 			return;
 		if ((src_ip.equals(src) && dst_ip.equals(dst))
 				|| (src_ip.equals(dst) && dst_ip.equals(src))) {
-
+			// We want it! Do PCAP creation
 			long timestamp = System.currentTimeMillis();
 
 			byte[] timestamp_sec = bigToLittleEndian(ByteBuffer.allocate(4)
@@ -432,6 +453,8 @@ public class PacketManager implements PacketService, SequencedPacketListener,
 
 			// TODO timestamp_usec is only milliseconds precision, we need to
 			// get the time in nano and convert to microseconds
+
+			// Pcap packet header, one for each packet.
 			byte[] timestamp_usec = bigToLittleEndian(ByteBuffer.allocate(4)
 					.putInt((int) (timestamp % 1000) * 1000).array());
 
@@ -446,6 +469,8 @@ public class PacketManager implements PacketService, SequencedPacketListener,
 				tmpOutputStream.write(timestamp_usec);
 				tmpOutputStream.write(size);
 				tmpOutputStream.write(size);
+				// Get the bytes from the packetIn message and write to file
+				// after pcap header
 				tmpOutputStream.write(msg.getPacketIn().getData());
 				tmpOutputStream.close();
 				System.out.println("PFW: Writing new packet to file");
@@ -476,6 +501,10 @@ public class PacketManager implements PacketService, SequencedPacketListener,
 		return array;
 	}
 
+	/*
+	 * called when a new DataPath is connected to the controller. Datapaths are
+	 * switches, by the way...
+	 */
 	@Override
 	public void event(DataPathEvent e) {
 		System.out.println("PFW: DataPathEvent");
@@ -493,7 +522,7 @@ public class PacketManager implements PacketService, SequencedPacketListener,
 			System.err.println("\t" + e1.name + ": " + e1.value);
 		}
 	}
-
+	// NOOOOO idea.. Sorry
 	@Override
 	public void queueEvent(QueueEvent arg0) {
 
